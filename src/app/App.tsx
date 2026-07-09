@@ -225,6 +225,7 @@ function ControlCenter({ visible, onClose }: { visible: boolean; onClose: () => 
         backdropFilter: "blur(50px) saturate(2)",
         WebkitBackdropFilter: "blur(50px) saturate(2)",
         pointerEvents: visible ? "auto" : "none",
+        touchAction: "none",
       }}
       onMouseDown={(e) => onDragStart(e.clientY)}
       onMouseMove={(e) => { if (e.buttons === 1) onDragMove(e.clientY); }}
@@ -464,6 +465,7 @@ export default function App() {
         height: "100vh",
         overflow: "hidden",
         alignItems: isFullscreen ? "flex-start" : "center",
+        touchAction: "none", 
       }}
     >
       <div
@@ -476,6 +478,7 @@ export default function App() {
           fontFamily: "-apple-system, 'SF Pro Display', 'Helvetica Neue', sans-serif",
           transform: `scale(${scale})`,
           transformOrigin: "top center",
+          touchAction: "none", 
         }}
         onMouseDown={handleMouseDown}
         onMouseUp={handleMouseUp}
