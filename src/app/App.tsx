@@ -54,22 +54,17 @@ const DOCK_ICONS = [
   { name: "Mail", bg: "bg-blue-400", icon: "✉️" },
 ];
 
-const FRAME_W = 390;
-const FRAME_H = 844;
-
-function useScale() {
-  const [scale, setScale] = useState(1);
+function useViewportSize() {
+  const [size, setSize] = useState({ w: window.innerWidth, h: window.innerHeight });
   useEffect(() => {
     function update() {
-      const scaleX = window.innerWidth / FRAME_W;
-      const scaleY = window.innerHeight / FRAME_H;
-      setScale(Math.min(scaleX, scaleY, 1)); // never scale up beyond 1
+      setSize({ w: window.innerWidth, h: window.innerHeight });
     }
     update();
     window.addEventListener("resize", update);
     return () => window.removeEventListener("resize", update);
   }, []);
-  return scale;
+  return size;
 }
 
 function useTime() {
@@ -213,7 +208,8 @@ function ControlCenter({ visible, onClose }: { visible: boolean; onClose: () => 
     dragStart.current = null;
   }
 
-  const translateY = visible ? dragY : -844;
+  const { h: viewportH } = useViewportSize();
+  const translateY = visible ? dragY : -viewportH;
 
   return (
     <div
@@ -426,14 +422,14 @@ export default function App() {
   function handleMouseDown(e: React.MouseEvent) {
     const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
     const relY = e.clientY - rect.top;
-    if (relY < 60 * scale && isInTriggerZone(e.clientX, rect)) mouseStartY.current = relY;
+    if (relY < 60 && isInTriggerZone(e.clientX, rect)) mouseStartY.current = relY;
   }
 
   function handleMouseUp(e: React.MouseEvent) {
     if (mouseStartY.current === null) return;
     const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
     const relY = e.clientY - rect.top;
-    if (relY - mouseStartY.current > 30 * scale) setCcOpen(true);
+    if (relY - mouseStartY.current > 30) setCcOpen(true);
     mouseStartY.current = null;
   }
 
@@ -442,7 +438,7 @@ export default function App() {
   function handleTouchStart(e: React.TouchEvent) {
     const t = e.touches[0];
     const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
-    if (t.clientY - rect.top < 60 * scale && isInTriggerZone(t.clientX, rect)) {
+    if (t.clientY - rect.top < 60 && isInTriggerZone(t.clientX, rect)) {
       touchStartY.current = t.clientY;
     }
   }
@@ -450,12 +446,11 @@ export default function App() {
   function handleTouchEnd(e: React.TouchEvent) {
     if (touchStartY.current === null) return;
     const t = e.changedTouches[0];
-    if (t.clientY - touchStartY.current > 40 * scale) setCcOpen(true);
+    if (t.clientY - touchStartY.current > 40) setCcOpen(true);
     touchStartY.current = null;
   }
 
-  const scale = useScale();
-  const isFullscreen = scale < 0.98; // treat as full-bleed on small screens
+  const { w, h } = useViewportSize();
 
   return (
     <div
@@ -464,21 +459,17 @@ export default function App() {
         width: "100vw",
         height: "100vh",
         overflow: "hidden",
-        alignItems: isFullscreen ? "flex-start" : "center",
-        touchAction: "none", 
+        touchAction: "none",
       }}
     >
       <div
         className="relative overflow-hidden select-none"
         style={{
-          width: FRAME_W,
-          height: FRAME_H,
-          
+          width: w,
+          height: h,
           background: "#000",
           fontFamily: "-apple-system, 'SF Pro Display', 'Helvetica Neue', sans-serif",
-          transform: `scale(${scale})`,
-          transformOrigin: "top center",
-          touchAction: "none", 
+          touchAction: "none",
         }}
         onMouseDown={handleMouseDown}
         onMouseUp={handleMouseUp}
