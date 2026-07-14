@@ -19,6 +19,13 @@ import {
   Battery,
   Lock,
 } from "lucide-react";
+import { getContext, nextUrl } from './tallyFlow';
+
+declare global {
+  interface Window {
+    Tally: any;
+  }
+}
 
 const APP_ICONS = [
   { name: "Messages", bg: "bg-green-500", icon: "💬" },
@@ -411,6 +418,7 @@ function HomeScreen() {
 const CC_TRIGGER_SIDE: "right" | "left" = "right";
 
 export default function App() {
+  const startTimeRef = useRef<number>(Date.now());
   const [ccOpen, setCcOpen] = useState(false);
   const mouseStartY = useRef<number | null>(null);
 
@@ -451,6 +459,25 @@ export default function App() {
   }
 
   const { w, h } = useViewportSize();
+
+  function handleRateClick() {
+    const ctx = getContext();
+    const elapsed = Date.now() - startTimeRef.current;
+
+    window.Tally.openPopup("gD17jO", { 
+      layout: "modal",
+      hiddenFields: {
+        pid: ctx.pid,
+        pair: ctx.pair,
+        variant: ctx.isVariant ? "lefthand" : "baseline",
+        step: ctx.step,
+        elapsed_ms: elapsed,
+      },
+      onSubmit: () => {
+        window.location.href = nextUrl(ctx);
+      },
+    });
+  }
 
   return (
     <div
@@ -526,6 +553,14 @@ export default function App() {
         {!ccOpen && (
           <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-28 h-1 bg-white/40 rounded-full z-50" />
         )}
+
+        {/* Rate this prototype */}
+        <button
+          onClick={handleRateClick}
+          className="absolute bottom-10 left-1/2 -translate-x-1/2 z-50 bg-white text-black text-[13px] font-semibold px-5 py-2 rounded-full shadow-lg active:scale-95 transition-transform"
+        >
+          Done testing — Rate this
+        </button>
       </div>
 
       
