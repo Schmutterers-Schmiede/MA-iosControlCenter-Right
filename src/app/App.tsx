@@ -19,7 +19,8 @@ import {
   Battery,
   Lock,
 } from "lucide-react";
-import { getContext, nextUrl } from './tallyFlow';
+import { getContext, nextUrl, INSTRUCTIONS } from './tallyFlow';
+import { InstructionsOverlay } from './InstructionsOverlay';
 
 declare global {
   interface Window {
@@ -415,7 +416,13 @@ const CC_TRIGGER_SIDE: "right" | "left" = "right";
 
 export default function App() {
   const startTimeRef = useRef<number>(Date.now());
+  const [showInstructions, setShowInstructions] = useState(true);
   const [ccOpen, setCcOpen] = useState(false);
+
+  function handleStart() {
+    startTimeRef.current = Date.now(); // timer starts here, not on page load
+    setShowInstructions(false);
+  }
   const mouseStartY = useRef<number | null>(null);
 
   function isInTriggerZone(clientX: number, rect: DOMRect) {
@@ -536,18 +543,6 @@ export default function App() {
         {/* Control Center */}
         <ControlCenter visible={ccOpen} onClose={() => setCcOpen(false)} />
 
-        {/* Swipe hint */}
-        {!ccOpen && (
-          <div className="absolute top-0 right-0 z-50 pointer-events-none">
-            <div
-              className="mt-12 mr-3 text-white/40 text-[9px] font-medium leading-none"
-              style={{ writingMode: "vertical-rl" }}
-            >
-              swipe ↓
-            </div>
-          </div>
-        )}
-
         {/* Home indicator */}
         {!ccOpen && (
           <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-28 h-1 bg-white/40 rounded-full z-50" />
@@ -560,6 +555,16 @@ export default function App() {
         >
           Done testing — Rate this
         </button>
+
+        {/* Instructions overlay, shown until participant taps Start */}
+        {showInstructions && (
+          <InstructionsOverlay
+            title={INSTRUCTIONS.control_center.title}
+            instructions={INSTRUCTIONS.control_center.text}
+            onStart={handleStart}
+            swipeSide={CC_TRIGGER_SIDE}
+          />
+        )}
       </div>
 
 

@@ -9,6 +9,25 @@ export const PROTOTYPE_URLS: Record<string, string> = {
   onehand_variant:     'https://you.github.io/onehand/?variant=lefthand',
 };
 
+export const INSTRUCTIONS: Record<string, { title: string; text: string }> = {
+  control_center: {
+    title: "Control Center",
+    text: "Try opening the control panel and toggling one setting. When you're done, tap 'Rate this' below.",
+  },
+  settings: {
+    title: "Settings Menu",
+    text: "Try toggling a few of the settings shown. When you're done, tap 'Rate this' below.",
+  },
+  amazon_nav: {
+    title: "App Navigation",
+    text: "Try navigating between two different sections using the menu. When you're done, tap 'Rate this' below.",
+  },
+  onehand: {
+    title: "One-Handed Mode",
+    text: "Try using the interface as you normally would with one hand. When you're done, tap 'Rate this' below.",
+  },
+};
+
 export function getContext() {
   const params = new URLSearchParams(window.location.search);
   const pid = params.get('pid') ?? '';
