@@ -117,9 +117,8 @@ function CCTile({
   return (
     <button
       onClick={onToggle}
-      className={`rounded-2xl flex items-center justify-center transition-all duration-150 active:scale-95 ${
-        active ? "bg-white text-black" : "bg-white/20 text-white"
-      } ${className}`}
+      className={`rounded-2xl flex items-center justify-center transition-all duration-150 active:scale-95 ${active ? "bg-white text-black" : "bg-white/20 text-white"
+        } ${className}`}
     >
       {children}
     </button>
@@ -255,9 +254,8 @@ function ControlCenter({ visible, onClose }: { visible: boolean; onClose: () => 
               className="flex items-center gap-2 active:opacity-70 transition-opacity"
             >
               <div
-                className={`w-7 h-7 rounded-full flex items-center justify-center transition-colors ${
-                  wifi ? "bg-white" : "bg-white/30"
-                }`}
+                className={`w-7 h-7 rounded-full flex items-center justify-center transition-colors ${wifi ? "bg-white" : "bg-white/30"
+                  }`}
               >
                 <Wifi size={14} className={wifi ? "text-black" : "text-white"} />
               </div>
@@ -271,9 +269,8 @@ function ControlCenter({ visible, onClose }: { visible: boolean; onClose: () => 
               className="flex items-center gap-2 active:opacity-70 transition-opacity"
             >
               <div
-                className={`w-7 h-7 rounded-full flex items-center justify-center transition-colors ${
-                  bluetooth ? "bg-white" : "bg-white/30"
-                }`}
+                className={`w-7 h-7 rounded-full flex items-center justify-center transition-colors ${bluetooth ? "bg-white" : "bg-white/30"
+                  }`}
               >
                 <Bluetooth size={14} className={bluetooth ? "text-black" : "text-white"} />
               </div>
@@ -287,9 +284,8 @@ function ControlCenter({ visible, onClose }: { visible: boolean; onClose: () => 
               className="flex items-center gap-2 active:opacity-70 transition-opacity"
             >
               <div
-                className={`w-7 h-7 rounded-full flex items-center justify-center transition-colors ${
-                  airplay ? "bg-white" : "bg-white/30"
-                }`}
+                className={`w-7 h-7 rounded-full flex items-center justify-center transition-colors ${airplay ? "bg-white" : "bg-white/30"
+                  }`}
               >
                 <Airplay size={14} className={airplay ? "text-black" : "text-white"} />
               </div>
@@ -463,20 +459,23 @@ export default function App() {
   function handleRateClick() {
     const ctx = getContext();
     const elapsed = Date.now() - startTimeRef.current;
-
-    window.Tally.openPopup("gD17jO", { 
+    const hiddenParams = {
       layout: "modal",
       hiddenFields: {
         pid: ctx.pid,
         pair: ctx.pair,
         variant: ctx.isVariant ? "lefthand" : "baseline",
         step: ctx.step,
-        elapsed_ms: elapsed,
+        elapsed_ms: elapsed
       },
       onSubmit: () => {
-        window.location.href = nextUrl(ctx);
-      },
-    });
+        window.location.href = nextUrl(ctx)
+      }
+    }
+
+    console.log(hiddenParams);
+
+    window.Tally.openPopup("gD17jO", hiddenParams);
   }
 
   return (
@@ -563,7 +562,7 @@ export default function App() {
         </button>
       </div>
 
-      
+
     </div>
   );
 }
