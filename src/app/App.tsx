@@ -18,6 +18,7 @@ import {
   Signal,
   Battery,
   Lock,
+  ArrowDown,
 } from "lucide-react";
 import { getContext, nextUrl, INSTRUCTIONS } from './tallyFlow';
 import { InstructionsOverlay } from './InstructionsOverlay';
@@ -442,6 +443,7 @@ export default function App() {
   }
 
   function handleMouseDown(e: React.MouseEvent) {
+    if (showInstructions) return;
     const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
     const relY = e.clientY - rect.top;
     if (relY < 60 && isInTriggerZone(e.clientX, rect)) mouseStartY.current = relY;
@@ -461,6 +463,7 @@ export default function App() {
   const touchStartY = useRef<number | null>(null);
 
   function handleTouchStart(e: React.TouchEvent) {
+    if (showInstructions) return;
     const t = e.touches[0];
     const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
     if (t.clientY - rect.top < 60 && isInTriggerZone(t.clientX, rect)) {
@@ -563,6 +566,22 @@ export default function App() {
         {/* Control Center */}
         <ControlCenter visible={ccOpen} onClose={() => setCcOpen(false)} />
 
+        {/* Swipe hint, only shown once the participant has started the task */}
+        {!showInstructions && !ccOpen && (
+          <div
+            className={`absolute top-3 z-50 pointer-events-none flex flex-col items-center gap-1 ${
+              CC_TRIGGER_SIDE === "right" ? "right-3" : "left-3"
+            }`}
+          >
+            <div className="w-10 h-10 rounded-full border-2 border-red-500 flex items-center justify-center animate-bounce bg-black/20">
+              <ArrowDown className="w-5 h-5 text-red-500" strokeWidth={3} />
+            </div>
+            <span className="text-red-500 text-[10px] font-bold tracking-wide">
+              SWIPE
+            </span>
+          </div>
+        )}
+
         {/* Home indicator */}
         {!ccOpen && (
           <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-28 h-1 bg-white/40 rounded-full z-50" />
@@ -587,7 +606,6 @@ export default function App() {
             title={INSTRUCTIONS.control_center.title}
             instructions={INSTRUCTIONS.control_center.text}
             onStart={handleStart}
-            swipeSide={CC_TRIGGER_SIDE}
           />
         )}
       </div>
