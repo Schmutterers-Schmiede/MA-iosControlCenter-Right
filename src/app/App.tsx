@@ -416,12 +416,23 @@ const CC_TRIGGER_SIDE: "right" | "left" = "right";
 
 export default function App() {
   const startTimeRef = useRef<number>(Date.now());
+  const timeToOpenRef = useRef<number | null>(null);
   const [showInstructions, setShowInstructions] = useState(true);
   const [ccOpen, setCcOpen] = useState(false);
+  const [hasOpenedOnce, setHasOpenedOnce] = useState(false);
 
   function handleStart() {
     startTimeRef.current = Date.now(); // timer starts here, not on page load
+    timeToOpenRef.current = null;
+    setHasOpenedOnce(false);
     setShowInstructions(false);
+  }
+
+  function markOpenedIfFirstTime() {
+    if (timeToOpenRef.current === null) {
+      timeToOpenRef.current = Date.now() - startTimeRef.current;
+      setHasOpenedOnce(true);
+    }
   }
   const mouseStartY = useRef<number | null>(null);
 
@@ -440,7 +451,10 @@ export default function App() {
     if (mouseStartY.current === null) return;
     const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
     const relY = e.clientY - rect.top;
-    if (relY - mouseStartY.current > 30) setCcOpen(true);
+    if (relY - mouseStartY.current > 30) {
+      setCcOpen(true);
+      markOpenedIfFirstTime();
+    }
     mouseStartY.current = null;
   }
 
@@ -457,7 +471,10 @@ export default function App() {
   function handleTouchEnd(e: React.TouchEvent) {
     if (touchStartY.current === null) return;
     const t = e.changedTouches[0];
-    if (t.clientY - touchStartY.current > 40) setCcOpen(true);
+    if (t.clientY - touchStartY.current > 40) {
+      setCcOpen(true);
+      markOpenedIfFirstTime();
+    }
     touchStartY.current = null;
   }
 
@@ -465,7 +482,9 @@ export default function App() {
 
   function handleRateClick() {
     const ctx = getContext();
-    const elapsed = Date.now() - startTimeRef.current;
+    // Falls back to time-since-start if they never completed the gesture,
+    // so we still capture something rather than sending null.
+    const elapsed = timeToOpenRef.current ?? (Date.now() - startTimeRef.current);
     const hiddenParams = {
       layout: "modal",
       hiddenFields: {
@@ -473,7 +492,8 @@ export default function App() {
         pair: ctx.pair,
         variant: ctx.isVariant ? "lefthand" : "baseline",
         step: ctx.step,
-        elapsed_ms: elapsed
+        elapsed_ms: elapsed,
+        grip_type: ctx.grip
       },
       onSubmit: () => {
         window.location.href = nextUrl(ctx)
@@ -551,7 +571,12 @@ export default function App() {
         {/* Rate this prototype */}
         <button
           onClick={handleRateClick}
-          className="absolute bottom-10 left-1/2 -translate-x-1/2 z-50 bg-white text-black text-[13px] font-semibold px-5 py-2 rounded-full shadow-lg active:scale-95 transition-transform"
+          disabled={!hasOpenedOnce}
+          className={`absolute bottom-10 left-1/2 -translate-x-1/2 z-50 text-sm font-bold px-7 py-3 rounded-full transition-all ${
+            hasOpenedOnce
+              ? "bg-blue-500 text-white shadow-[0_4px_20px_rgba(59,130,246,0.6)] active:scale-95"
+              : "bg-white/20 text-white/40 cursor-not-allowed"
+          }`}
         >
           Done testing — Rate this
         </button>

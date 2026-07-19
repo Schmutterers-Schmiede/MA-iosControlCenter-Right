@@ -33,20 +33,21 @@ export function getContext() {
   const pid = params.get('pid') ?? '';
   const order = (params.get('order') ?? '').split(',');
   const step = parseInt(params.get('step') ?? '0', 10);
+  const grip = params.get('grip') ?? '';
   const pairIndex = Math.floor(step / 2);
   const isVariant = step % 2 === 1;
   const pair = order[pairIndex];
-  return { pid, order, step, pair, isVariant };
+  return { pid, order, step, grip, pair, isVariant };
 }
 
 export function nextUrl(ctx: ReturnType<typeof getContext>) {
   const nextStep = ctx.step + 1;
-  if (nextStep >= 8) return `https://tally.so/r/FINAL_FORM_ID?pid=${ctx.pid}`;
+  if (nextStep >= 8) return `https://tally.so/r/FINAL_FORM_ID?pid=${ctx.pid}&grip=${ctx.grip}`;
   const nextPairIndex = Math.floor(nextStep / 2);
   const nextIsVariant = nextStep % 2 === 1;
   const nextPair = ctx.order[nextPairIndex];
   const key = `${nextPair}_${nextIsVariant ? 'variant' : 'baseline'}`;
   const base = PROTOTYPE_URLS[key];
   const sep = base.includes('?') ? '&' : '?';
-  return `${base}${sep}pid=${ctx.pid}&order=${ctx.order.join(',')}&step=${nextStep}`;
+  return `${base}${sep}pid=${ctx.pid}&order=${ctx.order.join(',')}&step=${nextStep}&grip=${ctx.grip}`;
 }
