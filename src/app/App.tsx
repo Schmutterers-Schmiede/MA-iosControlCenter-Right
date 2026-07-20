@@ -1,4 +1,4 @@
-import { GRIP_IMAGES } from './gripImages';
+import { GRIP_IMAGES } from '../gripImages';
 import { useState, useRef, useEffect } from "react";
 import {
   Wifi,
