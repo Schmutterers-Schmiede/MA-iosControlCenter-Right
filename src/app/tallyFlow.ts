@@ -29,7 +29,7 @@ export const PROTOTYPE_URLS: Record<string, string> = {
 export const INSTRUCTIONS: Record<string, { title: string; text: string }> = {
   control_center: {
     title: "Control Center",
-    text: "Try opening the control panel and toggling one setting. When you're done, tap 'Rate this' below.",
+    text: "Try opening the control panel 3 separate times, closing it after each one. When you're done, tap 'Rate this' below.",
   },
   settings: {
     title: "Settings Menu",
