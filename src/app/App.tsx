@@ -583,10 +583,10 @@ export default function App() {
               CC_TRIGGER_SIDE === "right" ? "right-3" : "left-3"
             }`}
           >
-            <div className="w-10 h-10 rounded-full border-2 border-red-500 flex items-center justify-center animate-bounce bg-black/20">
-              <ArrowDown className="w-5 h-5 text-red-500" strokeWidth={3} />
+            <div className="w-10 h-10 rounded-full border-2 border-green-500 flex items-center justify-center animate-bounce bg-black/20">
+              <ArrowDown className="w-5 h-5 text-green-500" strokeWidth={3} />
             </div>
-            <span className="text-red-500 text-[10px] font-bold tracking-wide">
+            <span className="text-green-500 text-[10px] font-bold tracking-wide">
               SWIPE
             </span>
           </div>
